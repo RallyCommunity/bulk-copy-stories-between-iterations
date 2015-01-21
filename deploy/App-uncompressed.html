@@ -138,13 +138,6 @@
         this._getModel().then({
             success: this._readSelected,
             scope: this
-        }).then({
-             success:function(){
-                 console.log('success');
-             },
-             failure:function(error){
-                 console.log('error', error);
-             }
         });
     },
     _getModel:function(){
@@ -161,12 +154,21 @@
                callback:function(result, operation) {
                    if(operation.wasSuccessful()){
                        console.log('got model...copying ' + result.get('FormattedID') + ' ' + result.get('Iteration')._refObjectName) ;
-                       var clone = result.copy();
-                       Ext.data.Model.id(clone);
-                       clone.set('ScheduleState', 'Defined');
+                       //var clone = result.copy();
+                       var clone = Rally.data.util.Record.copyRecord(result);
+                       //Ext.data.Model.id(clone);
                        clone.set('Project', this._destinationProject);
                        clone.set('Iteration', this._destinationIteration);
-                       return clone.save();
+                       return clone.save({
+                           callback:function(result,operation){
+                               if(operation.wasSuccessful()){
+                                   console.log('created ObjectID: ',result.get('ObjectID'), 'FormattedID: ', result.get('FormattedID')) ;
+                               }
+                               else{
+                                   console.log('clone operation failed');
+                               }
+                           }
+                       });
                    }
                    else{
                        console.log('oh, noes!');

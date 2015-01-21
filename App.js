@@ -129,13 +129,6 @@ Ext.define('CustomApp', {
         this._getModel().then({
             success: this._readSelected,
             scope: this
-        }).then({
-             success:function(){
-                 console.log('success');
-             },
-             failure:function(error){
-                 console.log('error', error);
-             }
         });
     },
     _getModel:function(){
@@ -152,12 +145,21 @@ Ext.define('CustomApp', {
                callback:function(result, operation) {
                    if(operation.wasSuccessful()){
                        console.log('got model...copying ' + result.get('FormattedID') + ' ' + result.get('Iteration')._refObjectName) ;
-                       var clone = result.copy();
-                       Ext.data.Model.id(clone);
-                       clone.set('ScheduleState', 'Defined');
+                       //var clone = result.copy();  //hits wrong "create" endpoint with appended OID, e.g. https://rally1.rallydev.com/slm/webservice/v2.0/HierarchicalRequirement/create/1234?fetch=true&includePermissions=true&project=%2Fproject%2F12352608219&projectScopeUp=false&projectScopeDown=true&key=b8f35e30-0ac6-4e45-b9c1-fbabda6b8c12
+                       var clone = Rally.data.util.Record.copyRecord(result);
+                       //Ext.data.Model.id(clone);
                        clone.set('Project', this._destinationProject);
                        clone.set('Iteration', this._destinationIteration);
-                       return clone.save();
+                       return clone.save({
+                           callback:function(result,operation){
+                               if(operation.wasSuccessful()){
+                                   console.log('created ObjectID: ',result.get('ObjectID'), 'FormattedID: ', result.get('FormattedID')) ;
+                               }
+                               else{
+                                   console.log('clone operation failed');
+                               }
+                           }
+                       });
                    }
                    else{
                        console.log('oh, noes!');
