@@ -14,7 +14,6 @@
     _destinationProject:null,
     _selectedRecordsOIDs : [],
     launch: function() {
-        console.log('workspace',this.getContext().getWorkspace());
         var that = this;
         var panel = Ext.create('Ext.panel.Panel', {
             layout: 'hbox',
@@ -153,10 +152,8 @@
                scope:this,
                callback:function(result, operation) {
                    if(operation.wasSuccessful()){
-                       console.log('got model...copying ' + result.get('FormattedID') + ' ' + result.get('Iteration')._refObjectName) ;
-                       //var clone = result.copy();
+                       console.log('copying... ' + result.get('FormattedID') + ' ' + result.get('Iteration')._refObjectName) ;
                        var clone = Rally.data.util.Record.copyRecord(result);
-                       //Ext.data.Model.id(clone);
                        clone.set('Project', this._destinationProject);
                        clone.set('Iteration', this._destinationIteration);
                        return clone.save({

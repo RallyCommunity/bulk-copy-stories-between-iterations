@@ -5,7 +5,6 @@ Ext.define('CustomApp', {
     _destinationProject:null,
     _selectedRecordsOIDs : [],
     launch: function() {
-        console.log('workspace',this.getContext().getWorkspace());
         var that = this;
         var panel = Ext.create('Ext.panel.Panel', {
             layout: 'hbox',
@@ -144,10 +143,8 @@ Ext.define('CustomApp', {
                scope:this,
                callback:function(result, operation) {
                    if(operation.wasSuccessful()){
-                       console.log('got model...copying ' + result.get('FormattedID') + ' ' + result.get('Iteration')._refObjectName) ;
-                       //var clone = result.copy();  //hits wrong "create" endpoint with appended OID, e.g. https://rally1.rallydev.com/slm/webservice/v2.0/HierarchicalRequirement/create/1234?fetch=true&includePermissions=true&project=%2Fproject%2F12352608219&projectScopeUp=false&projectScopeDown=true&key=b8f35e30-0ac6-4e45-b9c1-fbabda6b8c12
+                       console.log('copying... ' + result.get('FormattedID') + ' ' + result.get('Iteration')._refObjectName) ;
                        var clone = Rally.data.util.Record.copyRecord(result);
-                       //Ext.data.Model.id(clone);
                        clone.set('Project', this._destinationProject);
                        clone.set('Iteration', this._destinationIteration);
                        return clone.save({
